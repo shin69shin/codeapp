@@ -10,11 +10,16 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
+      - name: Download Required Frameworks
+        run: |
+          chmod +x downloadFrameworks.sh
+          ./downloadFrameworks.sh
+
       - name: Build and Archive Project
         run: |
           xcodebuild archive \
-            -project CodeApp.xcodeproj \
-            -scheme CodeApp \
+            -project Code.xcodeproj \
+            -scheme Code \
             -configuration Release \
             -archivePath $PWD/build/CodeApp.xcarchive \
             CODE_SIGNING_ALLOWED=NO \
@@ -23,7 +28,7 @@ jobs:
       - name: Generate Unsigned IPA
         run: |
           mkdir -p Payload
-          cp -r build/CodeApp.xcarchive/Products/Applications/CodeApp.app Payload/
+          cp -r build/CodeApp.xcarchive/Products/Applications/Code.app Payload/
           zip -r CodeApp.ipa Payload
 
       - name: Upload Finished IPA
