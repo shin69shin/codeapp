@@ -15,23 +15,22 @@ jobs:
           chmod +x downloadFrameworks.sh
           ./downloadFrameworks.sh
 
-      - name: List Available Schemes
-        run: xcodebuild -list -project Code.xcodeproj
-
-      - name: Build and Archive Project
+      - name: Build CodeApp Binary
         run: |
-          xcodebuild archive \
+          xcodebuild build \
             -project Code.xcodeproj \
-            -alltargets \
+            -scheme Code \
             -configuration Release \
-            -archivePath $PWD/build/CodeApp.xcarchive \
+            -destination 'generic/platform=iOS' \
             CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO
+            CODE_SIGNING_REQUIRED=NO \
+            PRODUCT_BUNDLE_IDENTIFIER="com.thebaselab.codeapp"
 
       - name: Generate Unsigned IPA
         run: |
           mkdir -p Payload
-          cp -r build/CodeApp.xcarchive/Products/Applications/*.app Payload/ 2>/dev/null || cp -r build/CodeApp.xcarchive/Products/Applications/Code.app Payload/
+          # Locate the freshly built .app folder from the Xcode build directory and copy it
+          find ~/Library/Developer/Xcode/DerivedData -name "*.app" -type d -exec cp -r {} Payload/ \;
           zip -r CodeApp.ipa Payload
 
       - name: Upload Finished IPA
