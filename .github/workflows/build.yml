@@ -15,16 +15,19 @@ jobs:
           chmod +x downloadFrameworks.sh
           ./downloadFrameworks.sh
 
-      - name: Build CodeApp Binary
+      - name: Build CodeApp Binary (Auto-Detect Scheme)
         run: |
+          # Automatically parse the project file to find the first valid build scheme
+          SELECT_SCHEME=$(xcodebuild -list -project Code.xcodeproj | awk '/Schemes:/{flag=1;next}/^$/{flag=0}flag' | sed 's/^[[:space:]]*//' | head -n 1)
+          echo "Discovered active scheme: '$SELECT_SCHEME'"
+          
           xcodebuild build \
             -project Code.xcodeproj \
-            -scheme Code \
+            -scheme "$SELECT_SCHEME" \
             -configuration Release \
             -destination 'generic/platform=iOS' \
             CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO \
-            PRODUCT_BUNDLE_IDENTIFIER="com.thebaselab.codeapp"
+            CODE_SIGNING_REQUIRED=NO
 
       - name: Generate Unsigned IPA
         run: |
