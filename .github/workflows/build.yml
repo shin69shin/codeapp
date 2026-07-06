@@ -1,7 +1,7 @@
 name: Build CodeApp IPA
 
 on:
-  workflow_dispatch: # Allows you to trigger the build manually with a button click
+  workflow_dispatch: 
 
 jobs:
   build:
@@ -9,15 +9,6 @@ jobs:
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
-
-      - name: Set up Xcode Version
-        run: sudo xcode-select -s /Applications/Xcode_15.2.app
-
-      - name: Install Dependencies
-        run: |
-          # If the project uses CocoaPods or Swift Package Manager dependencies, 
-          # resolve them here (e.g., pod install if a Podfile exists)
-          echo "Resolving packages..."
 
       - name: Build and Archive Project
         run: |
