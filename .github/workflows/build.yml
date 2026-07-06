@@ -19,7 +19,7 @@ jobs:
         run: |
           xcodebuild archive \
             -project Code.xcodeproj \
-            -scheme Code \
+            -scheme CodeUI \
             -configuration Release \
             -archivePath $PWD/build/CodeApp.xcarchive \
             CODE_SIGNING_ALLOWED=NO \
@@ -28,7 +28,7 @@ jobs:
       - name: Generate Unsigned IPA
         run: |
           mkdir -p Payload
-          cp -r build/CodeApp.xcarchive/Products/Applications/Code.app Payload/
+          cp -r build/CodeApp.xcarchive/Products/Applications/CodeUI.app Payload/
           zip -r CodeApp.ipa Payload
 
       - name: Upload Finished IPA
