@@ -15,19 +15,20 @@ jobs:
           chmod +x downloadFrameworks.sh
           ./downloadFrameworks.sh
 
-      - name: Build Raw Target (Memory Safe)
+      - name: Build Main App Only
         run: |
           xcodebuild build \
             -project Code.xcodeproj \
             -target Code \
             -configuration Release \
             -sdk iphoneos \
+            -skipPackagePluginValidation \
+            -skipUnavailableActions \
             SYMROOT=$PWD/build \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            PRODUCT_BUNDLE_IDENTIFIER="com.thebaselab.codeapp" \
             COMPILER_INDEX_STORE_ENABLE=NO \
-            -jobs 2
+            -jobs 1
 
       - name: Generate Unsigned IPA
         run: |
