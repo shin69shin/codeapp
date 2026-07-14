@@ -15,20 +15,21 @@ jobs:
           chmod +x downloadFrameworks.sh
           ./downloadFrameworks.sh
 
-      - name: Build Main App Only
+      - name: Build Main App Only (Optimized)
         run: |
           xcodebuild build \
             -project Code.xcodeproj \
             -target Code \
             -configuration Release \
             -sdk iphoneos \
-            -skipPackagePluginValidation \
-            -skipUnavailableActions \
             SYMROOT=$PWD/build \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             COMPILER_INDEX_STORE_ENABLE=NO \
+            SKIP_INSTALL=NO \
+            BUILD_LIBRARIES_FOR_DISTRIBUTION=YES \
             -jobs 1
+
 
       - name: Generate Unsigned IPA
         run: |
