@@ -15,36 +15,19 @@ jobs:
           chmod +x downloadFrameworks.sh
           ./downloadFrameworks.sh
 
-      - name: Build Raw Target (Bypass Missing Schemes)
+      - name: Build Raw Target (Memory Safe)
         run: |
-          # Try the CodeApp target first. If it fails, fallback to CodeUI. If that fails, build all targets.
           xcodebuild build \
             -project Code.xcodeproj \
-            -target CodeApp \
+            -target Code \
             -configuration Release \
             -sdk iphoneos \
             SYMROOT=$PWD/build \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            PRODUCT_BUNDLE_IDENTIFIER="com.thebaselab.codeapp" || \
-          xcodebuild build \
-            -project Code.xcodeproj \
-            -target CodeUI \
-            -configuration Release \
-            -sdk iphoneos \
-            SYMROOT=$PWD/build \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO \
-            PRODUCT_BUNDLE_IDENTIFIER="com.thebaselab.codeapp" || \
-          xcodebuild build \
-            -project Code.xcodeproj \
-            -alltargets \
-            -configuration Release \
-            -sdk iphoneos \
-            SYMROOT=$PWD/build \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO \
-            PRODUCT_BUNDLE_IDENTIFIER="com.thebaselab.codeapp"
+            PRODUCT_BUNDLE_IDENTIFIER="com.thebaselab.codeapp" \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            -jobs 2
 
       - name: Generate Unsigned IPA
         run: |
