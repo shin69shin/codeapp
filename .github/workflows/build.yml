@@ -15,13 +15,33 @@ jobs:
           chmod +x downloadFrameworks.sh
           ./downloadFrameworks.sh
 
-      - name: Build CodeApp Binary
+      - name: Build Raw Target (Bypass Missing Schemes)
         run: |
+          # Try the CodeApp target first. If it fails, fallback to CodeUI. If that fails, build all targets.
           xcodebuild build \
             -project Code.xcodeproj \
-            -scheme CodeApp \
+            -target CodeApp \
             -configuration Release \
-            -destination 'generic/platform=iOS' \
+            -sdk iphoneos \
+            SYMROOT=$PWD/build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            PRODUCT_BUNDLE_IDENTIFIER="com.thebaselab.codeapp" || \
+          xcodebuild build \
+            -project Code.xcodeproj \
+            -target CodeUI \
+            -configuration Release \
+            -sdk iphoneos \
+            SYMROOT=$PWD/build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            PRODUCT_BUNDLE_IDENTIFIER="com.thebaselab.codeapp" || \
+          xcodebuild build \
+            -project Code.xcodeproj \
+            -alltargets \
+            -configuration Release \
+            -sdk iphoneos \
+            SYMROOT=$PWD/build \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             PRODUCT_BUNDLE_IDENTIFIER="com.thebaselab.codeapp"
@@ -29,8 +49,8 @@ jobs:
       - name: Generate Unsigned IPA
         run: |
           mkdir -p Payload
-          # Locate the freshly built .app folder from the Xcode build directory and copy it
-          find ~/Library/Developer/Xcode/DerivedData -name "*.app" -type d -exec cp -r {} Payload/ \;
+          # We force Xcode to output to our local 'build' folder, making the .app easy to grab
+          find build -name "*.app" -type d -exec cp -r {} Payload/ \;
           zip -r CodeApp.ipa Payload
 
       - name: Upload Finished IPA
